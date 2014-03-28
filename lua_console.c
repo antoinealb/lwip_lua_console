@@ -75,7 +75,9 @@ void serve_conn(struct netconn *conn)
                 luaL_loadstring(l, command);
                 ret = lua_pcall(l, 0, LUA_MULTRET, 0);
                 if (ret) {
-                    printf("ERROR %d : %s\n", ret, lua_tostring(l, -1));
+                    snprintf(command, MAX_COMMAND_LEN, "ERROR %d : %s\n", ret, lua_tostring(l, -1));
+                    netconn_write(conn, command, strlen(command), NETCONN_COPY);
+
                     lua_pop(l, 1);
                 }
             }
