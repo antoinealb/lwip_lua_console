@@ -14,24 +14,6 @@
 #define MAX_COMMAND_LEN 200
 #define PROMPT ">> "
 
-char *strstrip(char *s)
-{
-    size_t size;
-    char *end;
-
-    size = strlen(s);
-
-    if (!size)
-        return s;
-
-    end = s + size - 1;
-    while (end >= s && isspace(*end))
-        end--;
-    *(end + 1) = '\0';
-
-    return s;
-}
-
 int print_func(lua_State *l)
 {
     struct netconn *conn;
