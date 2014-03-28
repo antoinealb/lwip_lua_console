@@ -22,7 +22,7 @@ int print_func(lua_State *l)
     if (lua_gettop(l) == 0)
         return 0;
 
-    lua_getglobal(l, "conn");
+    lua_getglobal(l, "__conn");
     conn = lua_touserdata(l, -1);
     lua_pop(l, 1);
 
@@ -53,7 +53,7 @@ void serve_conn(struct netconn *conn)
     luaL_openlibs(l);
 
     lua_pushlightuserdata(l, conn);
-    lua_setglobal(l, "conn");
+    lua_setglobal(l, "__conn");
 
     lua_pushcfunction(l, print_func);
     lua_setglobal(l, "print");
