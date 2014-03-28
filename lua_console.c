@@ -14,6 +14,23 @@
 #define MAX_COMMAND_LEN 200
 #define PROMPT ">> "
 
+// simple example of function binding from C to lua
+int mysum(lua_State *l)
+{
+    if (lua_gettop(l) != 2 || !lua_isnumber(l, -1) || !lua_isnumber(l, -2))
+        return 0;
+
+    double a, b;
+
+    // first parameters are top of stack
+    a = lua_tonumber(l, -1);
+    b = lua_tonumber(l, -2);
+
+    lua_pushnumber(l, a+b);
+
+    return 1; // return value count
+}
+
 int print_func(lua_State *l)
 {
     struct netconn *conn;
@@ -57,6 +74,10 @@ void serve_conn(struct netconn *conn)
 
     lua_pushcfunction(l, print_func);
     lua_setglobal(l, "print");
+
+    // registers demo function
+    lua_pushcfunction(l, mysum);
+    lua_setglobal(l, "mysum");
 
     netconn_write(conn, PROMPT, strlen(PROMPT), NETCONN_COPY);
     while((err = netconn_recv(conn, &buf)) == ERR_OK) {
@@ -108,8 +129,6 @@ static void luaconsole_thread(void *arg)
 
     while(1) {
         /* Grab new connection. */
-
-
         err = netconn_accept(conn, &newconn);
         if(err == ERR_OK) {
             serve_conn(newconn);
